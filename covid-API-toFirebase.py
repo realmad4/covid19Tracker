@@ -14,14 +14,13 @@ db = firestore.client()
 
 
 # this creates a country entry in firestore
-# noinspection PyMethodMayBeStatic
 class countryEntry:
     def __init__(self):
         self.country = ""
-        self.confirmed = []
-        self.recovered = []
-        self.critical = []
-        self.deaths = []
+        self.confirmed = 0
+        self.recovered = 0
+        self.critical = 0
+        self.deaths = 0
         self.coordinates = []
 
     # creates a dictionary from json file received from API then hands to data retrieval then links back
@@ -61,12 +60,24 @@ class countryEntry:
         response = requests.request("GET", url, headers=headers, params=querystring)
 
         countryData = json.loads(response.text)
-        print(countryData)
-        self.confirmed = countryData['confirmed']
-        self.recovered = countryData['recovered']
-        self.critical = countryData['critical']
-        self.deaths = countryData['deaths']
-        self.coordinates = countryData['latitude'], countryData['longitude']
+        for key in countryData:
+            countryDict: dict = key
+            print(countryDict)
+            print(type(countryDict))
+            print(self.coordinates)
+            print(int(countryDict['confirmed']))
+            print( int(countryDict['recovered']))
+            print(int(countryDict['critical']))
+            print(int(countryDict['deaths']))
+            print(float(countryDict['latitude']))
+            print(float(countryDict['longitude']))
+
+        self.confirmed = int(countryDict['confirmed'])
+        self.recovered = int(countryDict['recovered'])
+        self.critical = int(countryDict['critical'])
+        self.deaths = int(countryDict['deaths'])
+        self.coordinates.append(float(countryDict['latitude']))
+        self.coordinates.append(float(countryDict['longitude']))
 
     # Set replaces, if we want to simply update instead of replacing our station we can use .
 
@@ -85,12 +96,12 @@ def uploadData():
             u'Type': u'Point',
             u'Coordinates': instance.coordinates,
             u'Properties': {
-                u'Country name:': instance.country,
-                u'Confirmed cases:': instance.confirmed,
-                u'Recovered cases:': instance.recovered,
-                u'Critical cases:': instance.critical,
-                u'Deaths:': instance.deaths,
-                u'Coordinates:': instance.coordinates,
+                u'Country name': instance.country,
+                u'Confirmed cases': instance.confirmed,
+                u'Recovered cases': instance.recovered,
+                u'Critical cases': instance.critical,
+                u'Deaths': instance.deaths,
+                u'Coordinates': instance.coordinates,
             }
         }
     }
