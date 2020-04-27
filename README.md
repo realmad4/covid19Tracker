@@ -1,4 +1,4 @@
-# Wilderness-Weather-Station
+# covid19Tracker
 Using Python, HTML, JavaScript, and Firebase resources; our orginization created 2 different yet intertwined systems: 
 
 1) An API retrieval for country data using python, stores in firestore database.
