@@ -9,3 +9,4 @@ Using Python, HTML, JavaScript, and Firebase resources; our orginization created
 Firebase services were also used to store our country data within a Firestore realtime database for use between all systems. 
 
 Link to Firestore project: https://console.firebase.google.com/project/covid-19-archive-cosc3810/overview
+Link to hosted site: https://covid-19-archive-cosc3810.web.app/
