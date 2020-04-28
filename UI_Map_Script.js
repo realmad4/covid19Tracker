@@ -60,7 +60,7 @@ const firebaseConfig = {
     messagingSenderId: "406636731221",
     appId: "1:406636731221:web:1cde59ea51371eedd6addc",
     measurementId: "G-MRBRCXJHKH"
-  };
+};
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
@@ -93,46 +93,85 @@ function createPoints(doc) {
 
 
 
-var geoJSONFeature1 = { 
-    "type": "Feature",
-    "properties": {
-        "Country":doc.id,
-        "Confirmed": doc.data().Geometry.Properties.Confirmed,
-        "Recovered": doc.data().Geometry.Properties.Recovered,
-        "Critical": doc.data().Geometry.Properties.Critical,
-        "Deaths": doc.data().Geometry.Properties.Deaths,
-        "Coordinates": doc.data().Geometry.Properties.Coordinates,
-    },
-    "geometry": {
-        "type": "Point",
-        "coordinates":doc.data().Geometry.Coordinates,
+    var geoJSONFeature1 = { 
+        "type": "Feature",
+        "properties": {
+            "Country":doc.id,
+            "Confirmed": doc.data().Geometry.Properties.Confirmed,
+            "Recovered": doc.data().Geometry.Properties.Recovered,
+            "Critical": doc.data().Geometry.Properties.Critical,
+            "Deaths": doc.data().Geometry.Properties.Deaths,
+            "Coordinates": doc.data().Geometry.Properties.Coordinates
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates":doc.data().Geometry.Coordinates,
+            }
         }
-    }
-    
-    var geoJSONPoints = L.geoJSON(geoJSONFeature1, {
-        onEachFeature: function(geoJSONFeature1, layer) {
-            console.log("set vars");
-            var Country = geoJSONFeature1.properties.Country;
-            var Confirmed = geoJSONFeature1.properties.Confirmed;
-            var Critical = geoJSONFeature1.properties.Critical;
-            var Recovered = geoJSONFeature1.properties.Recovered;
-            var Deaths = geoJSONFeature1.properties.Deaths;
-            var Coordinates = geoJSONFeature1.properties.Coordinates;
-            console.log(Coordinates);
-            // Keep this:
-            layer.on('click', function(e) {
-                layer.bindPopup("Country: " + Country + "</br>"
-                                + "Confirmed cases: "+ Confirmed +"</br>"
-                                + "Critical cases: " + Critical + "</br>"
-                                + "Recovered cases: " + Recovered + "</br>"
-                                + "Deaths: " + Deaths + "</br>"
-                                + "Coordinates: [" + Coordinates + "]");
-    });
-}
-});
-console.log("hi")
-geoJSONPoints.addTo(stationMap)
 
+        var Confirmed = geoJSONFeature1.properties.Confirmed;
+        var adjustSize;
+        if(Confirmed >= 20000){
+            adjustSize = 10*(Confirmed/100000);
+        } else {
+            adjustSize = 3;
+        }
+        var Critical = geoJSONFeature1.properties.Critical;
+        var adjustWeight = 50*(Critical/100000);
+        var Deaths = geoJSONFeature1.properties.Deaths;
+        var adjustBlue;
+        var adjustGreen;
+        var adjustRed;
+        if (Deaths > 0) {
+            adjustBlue = 145-(4*(Deaths/Confirmed));
+            adjustRed = 255;
+            adjustGreen = adjustBlue;
+        } else {
+            adjustGreen = 255;
+            adjustRed = 0;
+            adjustBlue = 0;
+        }
+        var geojsonMarkerOptions = {
+			radius: adjustSize,
+         	fillColor: "rgb(" + adjustRed + ", " + adjustGreen + ", " + adjustBlue + ")",
+        	color: "rgb(255, 0, 0)",
+        	weight: adjustWeight,
+         	opacity: 1,
+         	fillOpacity: 0.7
+		};
+
+        
+        var geoJSONPoints = L.geoJSON(geoJSONFeature1, {
+            pointToLayer: function(geoJSONFeature1, latlng){
+                var Coordinates = geoJSONFeature1.properties.Coordinates;
+                var flippedCoords = [Coordinates[1], Coordinates[0]];
+				// Check on inputs
+				console.log("Feature: " + geoJSONFeature1 + " LatLng: " + flippedCoords);
+				return L.circleMarker(flippedCoords, geojsonMarkerOptions);
+			},
+            onEachFeature: function(geoJSONFeature1, layer) {
+                console.log("set vars");
+                var Country = geoJSONFeature1.properties.Country;
+                var Confirmed = geoJSONFeature1.properties.Confirmed;
+                var Critical = geoJSONFeature1.properties.Critical;
+                var Recovered = geoJSONFeature1.properties.Recovered;
+                var Deaths = geoJSONFeature1.properties.Deaths;
+                var Coordinates = geoJSONFeature1.properties.Coordinates;
+                console.log(Coordinates);
+                // Keep this:
+                layer.on('click', function(e) {
+                    layer.bindPopup("Country: " + Country + "</br>"
+                                    + "Confirmed cases: "+ Confirmed +"</br>"
+                                    + "Critical cases: " + Critical + "</br>"
+                                    + "Recovered cases: " + Recovered + "</br>"
+                                    + "Deaths: " + Deaths + "</br>"
+                                    + "Coordinates: [" + Coordinates + "]");
+        });
+    }
+});
+    console.log("hi")
+    geoJSONPoints.addTo(stationMap)
+    
 }
 
 // gets the date array, which is stored as date then the last element of date is displayed on the map
@@ -167,7 +206,7 @@ function createDateRef(doc){
         console.log("Error getting document:", error);
     });
 
-    }
+}
     
 
 
