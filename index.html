@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>COVID-19 TRACKER</title>
+        <link rel="shortcut icon" href="https://media.discordapp.net/attachments/689878308090937378/704821417266643061/unknown.png"/>
         <!-- Adding Custom CSS -->
         <link rel="stylesheet" href="UI_Map_Style.css">
 
@@ -22,6 +23,10 @@
         <div class="header">
             <h1 id="title">COVID-19 TRACKER</h1>
             <ul class="tabs">
+                <li class = "tabs" id="dropdown">
+                    Date: <select id="selector">
+                    </select>
+                </li>
                 <li class="tabs"><a href="javascript:void(0)" id="linkOne" onclick="switchDiv('archiveDiv', 'linkOne')">| Archive</a></li>
                 <li class="tabs"><a style="color: white;" href="javascript:void(0)" id="linkThree" onclick="switchDiv('stationMap', 'linkThree')">| Live Map</a></li>
             </ul>
@@ -30,14 +35,24 @@
         <div id="stationMap"> 
         </div>
         <div id="archiveDiv">
-            <h2 class="archive">Weather Stations: </h2>
-            <ul class="archive" id='dataObject'></ul>
+            <h2 class="archive">Archive </h2>
+            <p class="archive"> Data is displayed for the date selected on the menu in the top-left corner. </p>
+            <table class="archive" id="archiveTable">
+                <tr>
+                    <th style="width: 30vh;">Country</th>
+                    <th class="confirmed">Confirmed</th>
+                    <th class="critical">Critical</th>
+                    <th class="recovered">Recovered</th>
+                    <th class="deaths">Deaths</th>
+                    <th class="deathsper">Deaths per Confirmed</th>
+                </tr>
+            </table>
         </div>
         <div class="footer">
             <p> Point size is proportional to the number of confirmed cases. *</p>
             <p> Fill color is proportional to the number of deaths relative to the number of confirmed cases. Green points have no confirmed deaths. </p>
             <p> Border size is proportional to the number of critical cases relative to the number of confirmed cases. The critical:confirmed ratio is 5:1 for better visibility.</p>
-            <p> * Countries with less than 20,000 confirmed cases have a non-proportional static point size to remain visible on the map. </p>
+            <p> * Countries with less than 25,000 confirmed cases have a non-proportional static point size to remain visible on the map. </p>
         </div>
 
         

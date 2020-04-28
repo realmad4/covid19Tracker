@@ -4,6 +4,7 @@ var startingCoordinates;
 var maxZoom;
 var currentDiv = 'stationMap';
 var activeLink = 'linkThree';
+var dateSelector = document.getElementById("selector");
 
 // Setting map variables
 startingCoordinates = [0, 0];
@@ -70,6 +71,8 @@ var db = firebase.firestore();
 var datesRef = db.collection("Dates").doc("Array");
 var docRef = db.collection("Countries").doc("Geometry");
 const dataDisplay = document.getElementById('dataObject');
+var dates;
+var mostRecent;
 
 //add popups on features
 
@@ -82,6 +85,7 @@ function onEachFeature(feature, layer) {
 }
 
 // Create points and add properties to them 
+var pointsLayer;
 function createPoints(doc) {
     console.log("create points");
     var Country = doc.data().Geometry.Properties.Country;
@@ -111,10 +115,10 @@ function createPoints(doc) {
 
         var Confirmed = geoJSONFeature1.properties.Confirmed;
         var adjustSize;
-        if(Confirmed >= 20000){
-            adjustSize = 10*(Confirmed/100000);
+        if(Confirmed >= 25000){
+            adjustSize = 12*(Confirmed/100000);
         } else {
-            adjustSize = 3;
+            adjustSize = 5;
         }
         var Critical = geoJSONFeature1.properties.Critical;
         var adjustWeight = 50*(Critical/100000);
@@ -151,6 +155,7 @@ function createPoints(doc) {
 			},
             onEachFeature: function(geoJSONFeature1, layer) {
                 console.log("set vars");
+                layer.myTag = "pointsLayer";
                 var Country = geoJSONFeature1.properties.Country;
                 var Confirmed = geoJSONFeature1.properties.Confirmed;
                 var Critical = geoJSONFeature1.properties.Critical;
@@ -169,17 +174,17 @@ function createPoints(doc) {
         });
     }
 });
-    console.log("hi")
-    geoJSONPoints.addTo(stationMap)
-    
+    console.log("hi");
+    pointsLayer = geoJSONPoints.addTo(stationMap);  
 }
+
 
 // gets the date array, which is stored as date then the last element of date is displayed on the map
 function createDateRef(doc){
     console.log("get latest date from list");
-    var date = doc.data().Date;
-    console.log(date);
-    var mostRecent = date[date.length - 1];
+    dates = doc.data().Date;
+    console.log(dates);
+    mostRecent = dates[dates.length - 1];
 
     // Get most recent elements from database, feed through rendering function for map
     db.collection(mostRecent)
@@ -188,6 +193,7 @@ function createDateRef(doc){
         snapshot.docs.forEach(doc => {
             console.log(doc.data());
             createPoints(doc);
+            createArchive(doc);
         });
     }).catch(function(error) {
     console.log("Error getting documents: ", error);
@@ -216,13 +222,76 @@ db.collection("Dates")
                 .then((snapshot) => {
                     snapshot.docs.forEach(doc => {
                         console.log(doc.data());
-                        createDateRef(doc)
-                        
+                        createDateRef(doc);
+                        createDropdown(doc);
                     });
 }).catch(function(error) {
     console.log("Error getting documents: ", error);
 });
 
+// Function for removing points, used later to refresh points when a different dropdown is selected
+var removeMarkers = function() {
+    stationMap.eachLayer( function(layer) {
+
+      if ( layer.myTag &&  layer.myTag === "pointsLayer") {
+        stationMap.removeLayer(layer)
+          }
+
+        });
+}
+
+function createDropdown(doc) {
+    dates = doc.data().Date;
+    console.log(dates);
+    mostRecent = dates[dates.length - 1];
+    var dateIterator;
+    for (dateIterator = dates.length-1; dateIterator >= 0; dateIterator--){
+            currDate = dates[dateIterator];
+            dateSelector.innerHTML = dateSelector.innerHTML + '<option value="' + currDate + '">' + currDate + '</option>';
+    }
+}
+
+function changePoints(){
+    console.log("date clicked: " + this.value);
+    console.log(pointsLayer);
+    removeMarkers();
+    archiveTable.innerHTML = archiveHeader;
+    db.collection(this.value)
+    .get()
+    .then((snapshot) => {
+        snapshot.docs.forEach(doc => {
+            //console.log(doc.data());
+            createPoints(doc);
+            createArchive(doc);
+        });
+    }).catch(function(error) {
+    console.log("Error getting documents: ", error);
+    });
+}
+
+dateSelector.addEventListener("change", changePoints, false);
+
+// Creating the archive table...
+var archiveTable = document.getElementById("archiveTable");
+var archiveHeader = archiveTable.innerHTML;
+function createArchive(doc){
+    var Country = doc.data().Geometry.Properties.Country;
+    var Confirmed = doc.data().Geometry.Properties.Confirmed;
+    var Recovered = doc.data().Geometry.Properties.Recovered;
+    var Critical = doc.data().Geometry.Properties.Critical;
+    var Deaths = doc.data().Geometry.Properties.Deaths;
+    var Coordinates = doc.data().Geometry.Properties.Coordinates;
+
+    archiveTable.innerHTML = archiveTable.innerHTML + "<tr>"
+                                                    + "<th>" + Country + "</th>"
+                                                    + "<td class='confirmed'>" + Confirmed + "</td>"
+                                                    + "<td class='critical'>" + Critical + "</td>"
+                                                    + "<td class='recovered'>" + Recovered + "</td>"
+                                                    + "<td class='deaths'>" + Deaths + "</td>"
+                                                    + "<td class='deathsper'>" + Deaths/Confirmed + "</td>"
+                                                    + "</tr>";
+
+}
 // Testing references...
 datesRef.get().then(function(doc) {
     if (doc.exists) {

@@ -11,7 +11,7 @@
 #archiveDiv
 {
     position: fixed;
-    overflow: hidden;
+    overflow-x: hidden;
     height: 75vh;
     width: 0%;
     z-index: 0;
@@ -52,11 +52,12 @@ ul.tabs {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    margin: 0px 50px 0px 0;
+    margin: 0px 0px 0px 0;
 }
 li.tabs {
     float: right;
-    margin: 0 60px 0 0;
+    margin: 0 100px 0 0;
+    margin-left: 100px;
 }
 li.tabs a {
     display: block;
@@ -72,56 +73,41 @@ li.tabs a:hover {
 /* --END of Menu rules-- */
 
 /* --Styling Archive-- */
-h2.archive {
-    padding: 10px;
-}
-ul.archive {
-    list-style-type: none;
-    padding: 0px;
-    background-color: rgb(255, 255, 255);
-    height: 67vh;
-    overflow: hidden;
-    overflow-y: scroll;
-}
-li.archive {
-    padding: 10px;
-    border: 4px solid black;
-    border-left: 0px; 
-    border-right: 0px;
-    margin-top: -4px;
-    margin-left: 0px;
-    background-color: rgb(255, 255, 255);
-}
-span.station-name {
-    font-weight: bold;
-    font-size: 20px;
-}
-span.secondaryInfo {
+.archive {
     padding-left: 20px;
-    font-size: 15px;
-    color: grey;
+    font-family: 'IBM Plex Mono', monospace;
 }
-span.dataHeaders {
-    font-size: 20px;
-    color: black;
-    font-weight: bold;
-}
-ol.dataList {
-    list-style-type: none;
-    border-bottom: 2px solid black; 
-    border-top: 2px solid black;
-	border-left: 0px;
-    border-right: 0px;
-    padding: 10px;
-    margin: 10px;
-    height: 200px;
-    overflow: hidden;
+table {
+    border-collapse: collapse;
+    width: 100%;
     overflow-y: scroll;
-    width: 30vw;
-    text-align: center;
 }
-ol li {
-    border: 0px;
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 10px;
+}
+th {
+    background-color: rgb(184, 184, 184);
+}
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+.confirmed {
+    background-color: rgb(248, 145, 145)
+}
+.critical {
+    background-color: rgb(253, 101, 101)
+}
+.recovered {
+    background-color: rgb(183, 250, 177)
+}
+.deaths {
+    background-color: black;
+    color: white;
+}
+.deathsper {
+    background-color: rgb(248, 145, 145)
 }
 /* --END of Archive rules-- */
 
