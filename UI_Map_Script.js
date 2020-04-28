@@ -123,7 +123,7 @@ function createPoints(doc) {
         var adjustGreen;
         var adjustRed;
         if (Deaths > 0) {
-            adjustBlue = 145-(4*(Deaths/Confirmed));
+            adjustBlue = 145-(((1000*Deaths)/Confirmed));
             adjustRed = 255;
             adjustGreen = adjustBlue;
         } else {
